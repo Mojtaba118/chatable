@@ -10,7 +10,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Mojtaba\\Chatable\\Tests": "tests/"
+            "Mojtaba\\Chatable\\Tests\\": "tests/"
         }
     },
     "authors": [
