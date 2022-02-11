@@ -1,0 +1,21 @@
+{
+    "name": "mojtaba/chatable",
+    "description": "a Real-Time Chat Library",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mojtaba\\Chatable\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mojtaba",
+            "email": "40440450+Mojtaba118@users.noreply.github.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require-dev": {
+        "orchestra/testbench": "6.x-dev"
+    }
+}
