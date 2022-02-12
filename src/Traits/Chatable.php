@@ -13,58 +13,77 @@ trait Chatable
 {
     use HasRelationships;
 
-    public function privateChats()
+    public function senderChats()
     {
-        return $this->morphMany(static::class, 'sender');
+        return $this->morphMany(Chat::class, 'sender');
     }
 
-    public function messages(Chat $chat)
+    public function receiverChats()
     {
-        $chatExists = !!$this->privateChats()->where('id', $chat->id)->first();
+        return $this->morphMany(Chat::class, 'receiver');
+    }
 
-        if (!$chatExists)
-            throw new ChatNotFoundException();
+    public function chats()
+    {
+        return Chat::query()->where(function ($q) {
+            $q->where('sender_id', $this->id)
+                ->where('sender_type', static::class);
 
-        $chat->load('messages.replies');
-
-        return $chat->messages;
+        })->orWhere(function ($q) {
+            $q->where('receiver_id', $this->id)
+                ->where('receiver_type', static::class);
+        });
     }
 
     public function chatWith(Model $user)
     {
-        return $this->privateChats()->create([
+        return $this->senderChats()->create([
+            'uuid' => Str::uuid()->toString(),
             'receiver_id' => $user->id,
             'receiver_type' => get_class($user),
         ]);
     }
 
-    public function sendMessage(Chat $chat, $data)
-    {
-        $chatExists = !!$this->privateChats()->where('id', $chat->id)->first();
+//    public function messages(Chat $chat)
+//    {
+//        $chatExists = !!$this->chats()->where('id', $chat->id)->first();
+//
+//        if (!$chatExists)
+//            throw new ChatNotFoundException();
+//
+//        $chat->load('messages.replies');
+//
+//        return $chat->messages;
+//    }
 
-        if (!$chatExists)
-            throw new ChatNotFoundException();
 
-        return $chat->messages()->create(
-            [
-                'uuid' => Str::uuid(),
-                'content' => $data
-            ]
-        );
-    }
+//    public function sendMessage(Chat $chat, $data)
+//    {
+//        $chatExists = !!$this->chats()->where('id', $chat->id)->first();
+//
+//        if (!$chatExists)
+//            throw new ChatNotFoundException();
+//
+//        return $chat->messages()->create(
+//            [
+//                'uuid' => Str::uuid()->toString(),
+//                'content' => $data
+//            ]
+//        );
+//    }
 
-    public function sendReply(Chat $chat, Message $message, $data)
-    {
-        $chatExists = !!$this->privateChats()->whereHas('messages', fn($q) => $q->where('id', $message->id))->where('id', $chat->id)->first();
-
-        if (!$chatExists)
-            throw new ChatNotFoundException();
-
-        return $message->replies()->create(
-            [
-                'uuid' => Str::uuid(),
-                'content' => $data
-            ]
-        );
-    }
+//    public function sendReply(Chat $chat, Message $message, $data)
+//    {
+//        $chatExists = !!$this->senderChats()->whereHas('messages', fn($q) => $q->where('id', $message->id))->where('id', $chat->id)->first();
+//
+//        if (!$chatExists)
+//            throw new ChatNotFoundException();
+//
+//        return $message->replies()->create(
+//            [
+//                'uuid' => Str::uuid(),
+//                'content' => $data
+//            ]
+//        );
+//    }
 }
