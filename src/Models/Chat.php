@@ -10,12 +10,12 @@ class Chat extends Model
 
     public function sender()
     {
-        return $this->morphTo('sender');
+        return $this->morphTo();
     }
 
     public function receiver()
     {
-        return $this->morphTo('receiver');
+        return $this->morphTo();
     }
 
     public function messages()

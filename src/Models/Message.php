@@ -10,12 +10,12 @@ class Message extends Model
 
     public function chatable()
     {
-        return $this->morphTo('chatable');
+        return $this->morphTo();
     }
 
     public function sender()
     {
-        return $this->morphTo('sender');
+        return $this->morphTo();
     }
 
     public function reply()
