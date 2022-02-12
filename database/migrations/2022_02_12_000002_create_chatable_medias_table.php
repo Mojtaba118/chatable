@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Vista\Chat\App\Models\Message;
 
-class CreateChatableFilesTable extends Migration
+class CreateChatableMediasTable extends Migration
 {
     /**
      * Run the migrations.
