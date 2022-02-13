@@ -18,8 +18,13 @@ class Message extends Model
         return $this->morphTo();
     }
 
+    public function medias()
+    {
+        return $this->hasMany(Media::class);
+    }
+
     public function reply()
     {
-        
+        return $this->belongsTo(Message::class);
     }
 }
