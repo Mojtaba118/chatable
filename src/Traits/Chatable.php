@@ -4,10 +4,12 @@ namespace Mojtaba\Chatable\Traits;
 
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
+use Mojtaba\Chatable\Events\SendChatMessageEvent;
 use Mojtaba\Chatable\Exceptions\ChatNotFoundException;
 use Mojtaba\Chatable\Models\Chat;
 use Mojtaba\Chatable\Models\Message;
+use Mojtaba\Chatable\Services\ChatMessageService;
+use Mojtaba\Chatable\Services\ChatService;
 
 trait Chatable
 {
@@ -25,37 +27,38 @@ trait Chatable
 
     public function chats()
     {
-        return Chat::query()->where(function ($q) {
-            $q->where('sender_id', $this->id)
-                ->where('sender_type', static::class);
-
-        })->orWhere(function ($q) {
-            $q->where('receiver_id', $this->id)
-                ->where('receiver_type', static::class);
-        });
+        return ChatService::chats($this);
     }
 
     public function chatWith(Model $user)
     {
-        return $this->senderChats()->create([
-            'uuid' => Str::uuid()->toString(),
-            'receiver_id' => $user->id,
-            'receiver_type' => get_class($user),
-        ]);
+        return ChatService::chatWith($this, $user);
     }
 
-//    public function messages(Chat $chat)
-//    {
-//        $chatExists = !!$this->chats()->where('id', $chat->id)->first();
-//
-//        if (!$chatExists)
-//            throw new ChatNotFoundException();
-//
-//        $chat->load('messages.replies');
-//
-//        return $chat->messages;
-//    }
+    public function messages(Chat $chat)
+    {
+        if (!ChatService::chatExists($this, $chat))
+            throw new ChatNotFoundException();
 
+        $chat->load('messages');
+
+        return $chat->messages;
+    }
+
+    public function sendChatMessage(Chat $chat, $data)
+    {
+        if (!ChatService::chatExists($this, $chat))
+            throw new ChatNotFoundException();
+
+        $message = ChatMessageService::storeMessage($chat, $this, $data);
+
+        $this->sendChatMessageEvent($message);
+    }
+
+    public function sendChatMessageEvent(Message $message)
+    {
+        event(new SendChatMessageEvent($message));
+    }
 
 //    public function sendMessage(Chat $chat, $data)
 //    {
