@@ -15,9 +15,10 @@ class ChatMessageService
             ->setSender($sender);
 
         if (isset($data['file'])) {
-            $messageBuilder->setFile($data['file'], $data['message'] ?? null);
+            $messageBuilder->setFile($data['file'])
+                ->setMessageContent($data['message'] ?? null);
         } else {
-            $messageBuilder->setMessage($data['message']);
+            $messageBuilder->setMessageContent($data['message']);
         }
 
         if (isset($data['reply_id'])) {
