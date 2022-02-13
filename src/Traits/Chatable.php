@@ -25,6 +25,11 @@ trait Chatable
         return $this->morphMany(Chat::class, 'receiver');
     }
 
+    public function messages()
+    {
+        return $this->morphMany(Message::class, 'sender');
+    }
+
     public function chats()
     {
         return ChatService::chats($this);
@@ -35,7 +40,7 @@ trait Chatable
         return ChatService::chatWith($this, $user);
     }
 
-    public function messages(Chat $chat)
+    public function chatMessages(Chat $chat)
     {
         if (!ChatService::chatExists($this, $chat))
             throw new ChatNotFoundException();
@@ -53,6 +58,8 @@ trait Chatable
         $message = ChatMessageService::storeMessage($chat, $this, $data);
 
         $this->sendChatMessageEvent($message);
+
+        return $message;
     }
 
     public function sendChatMessageEvent(Message $message)
