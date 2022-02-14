@@ -50,7 +50,7 @@ trait Chatable
         return $chat->messages;
     }
 
-    public function sendChatMessage(Chat $chat, $data)
+    public function sendChatMessage(Chat $chat, $data): Message
     {
         if (!ChatService::chatExists($this, $chat))
             throw new ChatNotFoundException();
@@ -64,7 +64,7 @@ trait Chatable
 
     public function sendChatMessageEvent(Message $message)
     {
-        event(new SendChatMessageEvent($message));
+        broadcast(new SendChatMessageEvent($message));
     }
 
 //    public function sendMessage(Chat $chat, $data)
