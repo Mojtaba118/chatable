@@ -95,12 +95,14 @@ class ChatMessageBuilder
 
     private function storeFiles(Message $message): Media
     {
-        $now = now();
+        $filePath = (new FilePathHelper([
+            'chat_uuid' => $this->chat->uuid
+        ]))->generate();
 
-        $filePath = "chat_medias/$now->year/$now->month/" . $this->chat->uuid;
-        $fileName = $now->year . '_' . $now->month . '_' . $now->day . '_' . $this->file->hashName();
+        $fileName = (new FileNameHelper($this->file))
+            ->generate();
 
-        Storage::drive('public')->putFileAs($filePath, $this->file, $fileName);
+        Storage::drive(config('chatable.storage_driver'))->putFileAs($filePath, $this->file, $fileName);
 
         return $message->medias()->create([
             'uuid' => Str::uuid()->toString(),
