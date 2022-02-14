@@ -9,8 +9,8 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Mojtaba\Chatable\Models\Chat;
 use Mojtaba\Chatable\Models\Message;
+use Mojtaba\Chatable\Resources\MessageResource;
 
 class SendChatMessageEvent implements ShouldBroadcast
 {
@@ -45,6 +45,6 @@ class SendChatMessageEvent implements ShouldBroadcast
      */
     public function broadcastWith()
     {
-        return ['message' => $this->message->message];
+        return ['message' => new MessageResource($this->message)];
     }
 }
