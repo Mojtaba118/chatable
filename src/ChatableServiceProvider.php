@@ -14,12 +14,19 @@ class ChatableServiceProvider extends ServiceProvider
 
     public function register()
     {
-
+        $this->defineConfig();
     }
 
     public function defineMigrations()
     {
         $this->loadMigrationsFrom(__DIR__ . "/../database/migrations");
+    }
+
+    public function defineConfig()
+    {
+        $this->mergeConfigFrom(
+            __DIR__ . '/../config/chatable.php', 'chatable'
+        );
     }
 
     public function definePublishableConfigs()
@@ -28,6 +35,10 @@ class ChatableServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__ . "/../database/migrations" => database_path('migrations')
             ], 'chatable-migrations');
+
+            $this->publishes([
+                __DIR__ . "/../config/chatable.php" => config_path('chatable.php')
+            ], 'chatable-config');
         }
     }
 }
