@@ -21,7 +21,10 @@ class CreateMessagesTable extends Migration
             $table->string('chatable_type');
             $table->unsignedBigInteger('sender_id');
             $table->string('sender_type');
-            $table->text('message');
+            $table->text('message')->nullable();
+//            $table->unsignedBigInteger('readed_by_id');
+//            $table->string('readed_by_type');
+            $table->timestamp('readed_at');
             $table->timestamps();
         });
 
