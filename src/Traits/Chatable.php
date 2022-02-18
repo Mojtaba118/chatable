@@ -4,9 +4,11 @@ namespace Mojtaba\Chatable\Traits;
 
 use Illuminate\Database\Eloquent\Concerns\HasRelationships;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Mojtaba\Chatable\Events\SendChatMessageEvent;
 use Mojtaba\Chatable\Exceptions\ChatNotFoundException;
 use Mojtaba\Chatable\Models\Chat;
+use Mojtaba\Chatable\Models\Media;
 use Mojtaba\Chatable\Models\Message;
 use Mojtaba\Chatable\Services\ChatMessageService;
 use Mojtaba\Chatable\Services\ChatService;
@@ -30,6 +32,21 @@ trait Chatable
         return $this->morphMany(Message::class, 'sender');
     }
 
+    public function chatMedias(Chat $chat)
+    {
+        return $this->hasManyThrough(Media::class, Message::class, 'sender_id')
+            ->where([
+                'messages.sender_type' => static::class,
+                'messages.chatable_id' => $chat->id,
+                'messages.chatable_type' => get_class($chat)
+            ]);
+    }
+
+    public function hasChat(Chat $chat)
+    {
+        return ChatService::chatExists($this, $chat);
+    }
+
     public function chats()
     {
         return ChatService::chats($this);
@@ -42,7 +59,7 @@ trait Chatable
 
     public function chatMessages(Chat $chat)
     {
-        if (!ChatService::chatExists($this, $chat))
+        if (!$this->hasChat($chat))
             throw new ChatNotFoundException();
 
         $chat->load('messages');
@@ -52,7 +69,7 @@ trait Chatable
 
     public function sendChatMessage(Chat $chat, $data): Message
     {
-        if (!ChatService::chatExists($this, $chat))
+        if (!$this->hasChat($chat))
             throw new ChatNotFoundException();
 
         $message = ChatMessageService::storeMessage($chat, $this, $data);
@@ -64,36 +81,23 @@ trait Chatable
 
     public function sendChatMessageEvent(Message $message)
     {
-        broadcast(new SendChatMessageEvent($message));
+        event(new SendChatMessageEvent($message));
     }
 
-//    public function sendMessage(Chat $chat, $data)
-//    {
-//        $chatExists = !!$this->chats()->where('id', $chat->id)->first();
-//
-//        if (!$chatExists)
-//            throw new ChatNotFoundException();
-//
-//        return $chat->messages()->create(
-//            [
-//                'uuid' => Str::uuid()->toString(),
-//                'content' => $data
-//            ]
-//        );
-//    }
+    public function markChatMessageAsRead(Chat $chat)
+    {
+        if (!$this->hasChat($chat))
+            throw new ChatNotFoundException();
 
-//    public function sendReply(Chat $chat, Message $message, $data)
-//    {
-//        $chatExists = !!$this->senderChats()->whereHas('messages', fn($q) => $q->where('id', $message->id))->where('id', $chat->id)->first();
-//
-//        if (!$chatExists)
-//            throw new ChatNotFoundException();
-//
-//        return $message->replies()->create(
-//            [
-//                'uuid' => Str::uuid(),
-//                'content' => $data
-//            ]
-//        );
-//    }
+        return Message::query()->where(function ($q) use ($chat) {
+            $q->where('chatable_id', $chat->id)
+                ->where('chatable_type', get_class($chat));
+        })->where(function ($q) {
+            $q->where('sender_id', '!=', $this->id)
+                ->orWhere('sender_type', '!=', get_class($this));
+        })->whereNull('readed_at')
+            ->update([
+                'readed_at' => now()
+            ]);
+    }
 }
