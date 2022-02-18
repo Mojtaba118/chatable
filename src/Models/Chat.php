@@ -22,4 +22,17 @@ class Chat extends Model
     {
         return $this->morphMany(Message::class, 'chatable');
     }
+
+    public function scopeWithUnreadMessagesCount($q, Model $user, $fieldName = 'unread_messages_count')
+    {
+        return $q->withCount(["messages as $fieldName" => function ($q) use ($user) {
+            $q->where(function ($q) use ($user) {
+                $q->where(function ($q) use ($user) {
+                    $q->where('messages.sender_id', '!=', $user->id)
+                        ->orWhere('messages.sender_type', '!=', get_class($user));
+                })
+                    ->whereNull('messages.readed_at');
+            });
+        }]);
+    }
 }
