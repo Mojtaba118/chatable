@@ -94,7 +94,7 @@ trait Chatable
                 ->where('chatable_type', get_class($chat));
         })->where(function ($q) {
             $q->where('sender_id', '!=', $this->id)
-                ->orWhere('sender_type', '!=', get_class($this));
+                ->orWhere('sender_type', '!=', static::class);
         })->whereNull('readed_at')
             ->update([
                 'readed_at' => now()
