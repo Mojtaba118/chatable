@@ -17,7 +17,7 @@ class CreateChatableMediasTable extends Migration
         Schema::create('chatable_medias', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
-            $table->foreignId('message_id')->constrained();
+            $table->foreignId('message_id')->constrained('chatable_messages');
             $table->text('path');
             $table->string('type');
             $table->timestamps();
