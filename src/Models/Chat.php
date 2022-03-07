@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model
 {
+    protected $table = 'chatable_chats';
+
     protected $guarded = ['id'];
 
     public function sender()

@@ -31,6 +31,6 @@ class CreateChatableMediasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('chatable_files');
+        Schema::dropIfExists('chatable_medias');
     }
 }

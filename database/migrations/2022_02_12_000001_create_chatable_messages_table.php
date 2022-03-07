@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Vista\Chat\App\Models\Message;
 
-class CreateMessagesTable extends Migration
+class CreateChatableMessagesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class CreateMessagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('messages', function (Blueprint $table) {
+        Schema::create('chatable_messages', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
             $table->unsignedBigInteger('chatable_id');
@@ -28,7 +28,7 @@ class CreateMessagesTable extends Migration
             $table->timestamps();
         });
 
-        Schema::table('messages', function (Blueprint $table) {
+        Schema::table('chatable_messages', function (Blueprint $table) {
             $table->foreignId('reply_id')->after('uuid')->nullable()->constrained('messages')->nullOnDelete();
         });
     }
@@ -40,6 +40,6 @@ class CreateMessagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('messages');
+        Schema::dropIfExists('chatable_messages');
     }
 }
