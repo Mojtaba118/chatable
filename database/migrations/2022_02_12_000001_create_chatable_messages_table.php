@@ -29,7 +29,7 @@ class CreateChatableMessagesTable extends Migration
         });
 
         Schema::table('chatable_messages', function (Blueprint $table) {
-            $table->foreignId('reply_id')->after('uuid')->nullable()->constrained('messages')->nullOnDelete();
+            $table->foreignId('reply_id')->after('uuid')->nullable()->constrained('chatable_messages')->nullOnDelete();
         });
     }
 
