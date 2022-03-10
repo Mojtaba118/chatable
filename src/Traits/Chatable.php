@@ -100,4 +100,9 @@ trait Chatable
                 'readed_at' => now()
             ]);
     }
+
+    public function hasChatWith(Model $user)
+    {
+        return ChatService::hasChatWith($this, $user);
+    }
 }
