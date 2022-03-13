@@ -30,7 +30,8 @@ class ChatService
 
     public static function hasChatWith(Model $user, Model $receiver)
     {
-        return !!static::chats($user)->where(static::getChatableCondition($receiver))->first();
+        $chat = static::chats($user)->where(static::getChatableCondition($receiver))->first();
+        return $chat->id ?? null;
     }
 
     private static function getChatableCondition(Model $user)
