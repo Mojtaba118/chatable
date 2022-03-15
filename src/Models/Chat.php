@@ -25,6 +25,11 @@ class Chat extends Model
         return $this->morphMany(Message::class, 'chatable');
     }
 
+    public function message()
+    {
+        return $this->morphMany(Message::class, 'chatable')->orderBy('id', 'DESC')->limit(1);
+    }
+
     public function scopeWithUnreadMessagesCount($q, Model $user, $fieldName = 'unread_messages_count')
     {
         return $q->withCount(["messages as $fieldName" => function ($q) use ($user) {
