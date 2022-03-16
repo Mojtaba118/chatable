@@ -11,14 +11,7 @@ class ChatService
 {
     public static function chats(Model $user)
     {
-        return Chat::query()->where(function ($q) use ($user) {
-            $q->where('sender_id', $user->id)
-                ->where('sender_type', get_class($user));
-
-        })->orWhere(function ($q) use ($user) {
-            $q->where('receiver_id', $user->id)
-                ->where('receiver_type', get_class($user));
-        });
+        return Chat::query()->where(static::getChatableCondition($user));
     }
 
     public static function chatWith(Model $sender, Model $receiver)
@@ -33,5 +26,25 @@ class ChatService
     public static function chatExists(Model $user, Chat $chat): bool
     {
         return !!static::chats($user)->where('id', $chat->id)->first();
+    }
+
+    public static function hasChatWith(Model $user, Model $receiver)
+    {
+        $chat = static::chats($user)->where(static::getChatableCondition($receiver))->first();
+        return $chat->id ?? null;
+    }
+
+    private static function getChatableCondition(Model $user)
+    {
+        return static function ($q) use ($user) {
+            $q->where(function ($q) use ($user) {
+                $q->where('sender_id', $user->id)
+                    ->where('sender_type', get_class($user));
+
+            })->orWhere(function ($q) use ($user) {
+                $q->where('receiver_id', $user->id)
+                    ->where('receiver_type', get_class($user));
+            });
+        };
     }
 }

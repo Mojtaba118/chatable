@@ -103,7 +103,6 @@ trait Chatable
                 'readed_at' => now()
             ]);
     }
-
     public function members()
     {
         return $this->morphMany(Member::class, 'member');
@@ -113,6 +112,8 @@ trait Chatable
     {
         return $this->morphMany(Readables::class, 'member');
     }
-
-
+    public function hasChatWith(Model $user)
+    {
+        return ChatService::hasChatWith($this, $user);
+    }
 }
