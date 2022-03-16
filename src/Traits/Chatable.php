@@ -8,8 +8,11 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Mojtaba\Chatable\Events\SendChatMessageEvent;
 use Mojtaba\Chatable\Exceptions\ChatNotFoundException;
 use Mojtaba\Chatable\Models\Chat;
+use Mojtaba\Chatable\Models\Group;
 use Mojtaba\Chatable\Models\Media;
+use Mojtaba\Chatable\Models\Member;
 use Mojtaba\Chatable\Models\Message;
+use Mojtaba\Chatable\Models\Readables;
 use Mojtaba\Chatable\Services\ChatMessageService;
 use Mojtaba\Chatable\Services\ChatService;
 
@@ -100,7 +103,15 @@ trait Chatable
                 'readed_at' => now()
             ]);
     }
+    public function members()
+    {
+        return $this->morphMany(Member::class, 'member');
+    }
 
+    public function readables()
+    {
+        return $this->morphMany(Readables::class, 'member');
+    }
     public function hasChatWith(Model $user)
     {
         return ChatService::hasChatWith($this, $user);

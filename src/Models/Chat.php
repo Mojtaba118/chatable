@@ -42,4 +42,9 @@ class Chat extends Model
             });
         }]);
     }
+
+    public function readables()
+    {
+        return $this->morphMany(Readables::class, 'chatable');
+    }
 }
