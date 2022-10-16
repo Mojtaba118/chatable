@@ -3,7 +3,7 @@
     "description": "a Real-Time Chat Library",
     "type": "library",
     "license": "MIT",
-    "version": "0.5.4",
+    "version": "1.0.0",
     "autoload": {
         "psr-4": {
             "Mojtaba\\Chatable\\": "src/"
